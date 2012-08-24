@@ -260,7 +260,7 @@ def initdb():
 def listener(bind, workers, loglevel, pidfile):
 	"""Run the listeners for production mode.
 	
-	This will per default run the app on port 53765,
+	This will per default run the app on port 53676,
 	only visible on localhost and with 4 workers. You can
 	change this behavior with the available parameters."""
 	from gunicorn.app.base import Application as GunicornApplication
