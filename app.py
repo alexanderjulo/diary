@@ -253,5 +253,26 @@ def delete(entryid):
 def initdb():
 	db.create_all()
 
+@manager.option('-w', '--workers', dest='workers', default=4)
+@manager.option('-b', '--bind', dest='bind', default='127.0.0.1:53676')
+@manager.option('-l', '--loglevel', dest='loglevel', default='info')
+@manager.option('-p', '--pidfile', dest='pidfile', default=None)
+def listener(bind, workers, loglevel, pidfile):
+	"""Run the listeners for production mode.
+	
+	This will per default run the app on port 53765,
+	only visible on localhost and with 4 workers. You can
+	change this behavior with the available parameters."""
+	from gunicorn.app.base import Application as GunicornApplication
+	
+	class FlaskApplication(GunicornApplication):
+		def init(self, parser, opts, args):
+			return {'bind': bind, 'workers': workers, 'pidfile': pidfile, 'loglevel': loglevel}
+		
+		def load(self):
+			return app
+			
+	FlaskApplication().run()
+
 if __name__ == '__main__':
 	manager.run()
