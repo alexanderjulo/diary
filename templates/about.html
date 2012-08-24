@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+	<div class="span12">
+		<div class="hero-unit">
+			<h1>Your personal diary</h1>
+			<p>It is what you always wanted, you just did not know it yet.</p>
+			<p>Log in easiliy, you do not need an email-address or anything, just write whatever you want.</p>
+			<div class="row">
+				<div class="span5">
+					<h2>Features</h2>
+					<ul class="unstyled">
+						<li>Markdown</li>
+						<li>Responsive Design</li>
+						<li>HTTP-API with public documentation (write apps as you like)</li>
+					</ul>
+				</div>
+				<div class="span5">
+					<h2>Screenshots</h2>
+					<div class="carousel slide" id="slideshow">
+						<div class="carousel-inner">
+							<div class="active item"><img src="{{ url_for('static', filename='img/diary-index-shot.png') }}"></div>
+							<div class="item"><img src="{{ url_for('static', filename='img/diary-submit-shot.png') }}"></div>
+						</div>
+						<a href="#slideshow" data-slide="prev" class="carousel-control left">&lsaquo;</a>
+						<a href="#slideshow" data-slide="next" class="carousel-control right">&rsaquo;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<h2>Log in</h2>
+		<p>For our beloved writers. Just log in and you can write about whatever you want. No problems at all, our website is just waiting for you.</p>
+		<a href="{{ url_for('login') }}" class="btn">Login</a>
+	</div>
+	<div class="span6">
+		<h2>Sign up</h2>
+		<p>You are new to our service? Just sign up with a username of your choice and a password and you are ready to go.</p>
+		<a href="{{ url_for('signup') }}" class="btn">Sign up</a>
+	</div>
+</div>
+{% endblock content %}
