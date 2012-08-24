@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{SERVER_PORT} !^443$
+RewriteRule ^(.*)$  https://%{SERVER_NAME}%{REQUEST_URI} [L]
+
+RewriteRule ^(.*)$ http://localhost:53676/$1 [P]
