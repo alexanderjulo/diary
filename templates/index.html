@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% if entries %}
+		{% for day in entries %}
+			{% if day.entries %}
+				<h2>{{ day.date.strftime("%A, %d. %B %Y") }}</h2>	
+				{% for entry in day.entries %}
+					<div class="row">
+						<div class="span8 offset2">
+							<h3>{% if entry.title %}{{ entry.title }}{% else %}<span style="color:transparent;">keine katastrophen!</span>{% endif %} <small class="pull-right">- {{ entry.time.strftime("%H:%M") }}</small></h3>
+						{{ entry.html|safe }}
+						</div>
+					</div>
+					<div class="row">
+						<div class="offset7 span3">
+							<a href="{{ url_for('view', entryid=entry.id) }}" class="btn btn-info btn-small">Share</a> <a href="{{ url_for('edit', entryid=entry.id) }}" class="btn btn-small btn-warning">Edit</a> <a href="{{ url_for('delete', entryid=entry.id) }}" class="btn btn-small btn-danger">Delete</a>
+						</div>
+					</div>
+					{% if not loop.last %}
+						<hr>
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		<p>No entries in your diary so far.</p>
+	{% endif %}
+{% endblock content %}

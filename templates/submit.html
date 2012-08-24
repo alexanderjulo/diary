@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="{{ url_for('submit') }}" method="post" class="form form-horizontal">
+	{{ form.csrf_token }}
+	<legend>Write a new entry</legend>
+	{{ render_bs_input(form.title, placeholder='This one is optional!') }}
+	{{ render_bs_input(form.markup, rows='20', class='span8', placeholder='Write your markdown here...') }}
+	{{ render_bs_input(form.public) }}
+	<div class="form-actions">
+		<input type="submit" value="Submit" class="btn btn-primary">
+		<input type="submit" value="Save as draft" class="btn">
+	</div>
+</form>
+{% endblock content %}

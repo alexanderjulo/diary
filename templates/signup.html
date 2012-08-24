@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="form form-horizontal well span6 offset2" method="POST" action="{{ url_for('signup') }}">
+	{{ form.csrf_token }}
+	{{ render_bs_input(form.username, placeholder='Choose a username') }}
+	{{ render_bs_input(form.password, placeholder='Choose a password') }}
+	{{ render_bs_input(form.confirm, placeholder='Confirm the password') }}
+	
+	<div class="form-actions">
+		<input type="submit" value="Sign up" class="btn btn-primary">
+	</div>
+</form>
+{% endblock content %}

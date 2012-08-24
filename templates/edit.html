@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+{% if form.errors %}
+	{% for error in form.errors %}
+		<p>{{ error }}</p>
+	{% endfor %}
+{% endif %}
+<form action="{{ url_for('edit', entryid=entry.id) }}" method="post" class="form form-horizontal">
+	{{ form.csrf_token }}
+	<legend>Edit entry</legend>
+	<div class="control-group">
+		<div class="controls">
+			<input name="title" type="text" placeholder="Title (optional)" class="span8" value="{{ entry.title }}">
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<textarea name="markup" placeholder="Your text" class="span8" rows="20">{{ entry.markup }}</textarea>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="controls">
+			<label class="checkbox" for="public">
+				<input name="public" type="checkbox"> Make this entry public
+			</label>
+		</div>
+	</div>
+	<div class="form-actions">
+		<input type="submit" value="Save" class="btn btn-primary">
+	</div>
+</form>
+{% endblock content %}

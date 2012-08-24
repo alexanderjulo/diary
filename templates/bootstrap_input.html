@@ -1,0 +1,29 @@
+<div class="control-group {% if input.errors %}error{% endif %}">
+	{% if input.type == 'BooleanField' %}
+		<div class="controls">
+			<label for="{{ input.name }}" class="checkbox">
+				{{ input }}
+				{{ input.label.text }}
+			</label>
+		</div>
+	{% else %}
+		<label for="{{ input.name }}" class="control-label">{{ input.label.text }}</label>
+		<div class="controls">
+			{% if override %}
+				{{ override|safe }}
+			{% else %}
+				{{ input(**param) }}
+			{% endif %}
+			{% if input.errors %}
+			<div>
+				{% for error in input.errors %}
+					<span class="help-inline">
+						{{ error }}
+					</span>
+				{% endfor %}
+			</div>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>
+	
