@@ -116,7 +116,7 @@ class LoginForm(Form):
 
 	def validate_password(form, field):
 		user = User.query.filter_by(username=form.data['username']).first()
-		if not user.authenticate(form.data['password']):
+		if not user or not user.authenticate(form.data['password']):
 			raise ValidationError('Username and password do not match.')
 	
 class EntryForm(Form):
