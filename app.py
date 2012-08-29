@@ -210,7 +210,7 @@ def submit():
 	if form.validate_on_submit():
 		entry = Entry()
 		form.populate_obj(entry)
-		entry.html = markdown(entry.markup)
+		entry.html = markdown(entry.markup, safe_mode="remove")
 		now = datetime.now()
 		entry.owner_id = current_user.id
 		entry.date = now.date()
