@@ -144,6 +144,7 @@ def signup():
 		user = User(form.data['username'], form.data['password'])
 		db.session.add(user)
 		db.session.commit()
+		user.authenticated = True
 		login_user(user)
 		db.session.commit()
 		flash('Thank you for signing up. You have been logged in already!', 'success')
