@@ -10,6 +10,7 @@ from jinja2.filters import do_mark_safe as safe
 from wtforms import fields, validators, ValidationError
 from markdown import markdown
 from datetime import datetime, date, time
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -136,6 +137,28 @@ def render_bs_input(input, disabled=False, override=None, **param):
 def inject_tools():
 	return dict(render_bs_input=render_bs_input)
 
+def auth_check(username, password):
+	user = User.query.filter_by(username=username).first()
+	if not user or not user.authenticate(password):
+		return False
+	else:
+		return True
+
+def auth_missing():
+	return Response(
+		'Could not verify your access level for that URL.\n'
+		'You have to login with proper credentials', 401,
+		{'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def auth_required(f):
+	@wraps(f)
+	def decorated(*args, **kwargs):
+		 auth = request.autorization
+		 if not auth or not auth_check(auth):
+		 	return auth_missing()
+		 return f(*args, **kwargs)
+	return decorated
+
 """Routes"""
 @app.route('/signup/', methods=['GET', 'POST'])
 def signup():
@@ -156,7 +179,9 @@ def signup():
 @app.route('/about/')
 def about():
 	return render_template('about.html')
-	
+
+
+"""Routes for normal access."""
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
