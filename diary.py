@@ -1,10 +1,11 @@
 #!/usr/bin/env python2.7
 from flask import Flask, request, Response, render_template, redirect, \
-	url_for, abort, flash
+url_for, abort, flash
 from flask.views import MethodView
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
-from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
+from flask.ext.login import LoginManager, login_user, logout_user, \
+current_user, login_required
 from flask.ext.bcrypt import Bcrypt
 from flask.ext.script import Manager
 from jinja2.filters import do_mark_safe as safe
@@ -89,7 +90,8 @@ class Entry(db.Model):
 		"""Enable the entry to be used as {{ entry }} in templates. This
 		property will return the html body of the entry in that case."""
 		return self.html
-Entry.owner = db.relationship('User', backref=db.backref('entry', lazy='dynamic'))
+Entry.owner = db.relationship('User', backref=db.backref('entry', \
+	lazy='dynamic'))
 
 class Attachment(db.Model):
 	"""This class is carrying the attachments. It is always connected to
@@ -99,7 +101,8 @@ class Attachment(db.Model):
 	entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'))
 
 	filename = db.Column(db.String(255))
-Attachment.entry = db.relationship('Entry', backref=db.backref('entry', lazy='dynamic'))
+Attachment.entry = db.relationship('Entry', backref=db.backref('entry', \
+	lazy='dynamic'))
 
 
 
@@ -151,7 +154,8 @@ def load_user(userid):
 	return User.query.get(userid)
 
 def render_bs_input(input, disabled=False, override=None, **param):
-	return safe(render_template('bootstrap_input.html', input=input, disabled=disabled, override=override, param=param))
+	return safe(render_template('bootstrap_input.html', input=input, \
+		disabled=disabled, override=override, param=param))
 
 @app.context_processor
 def inject_tools():
@@ -201,7 +205,8 @@ def signup():
 		user.authenticated = True
 		login_user(user)
 		db.session.commit()
-		flash('Thank you for signing up. You have been logged in already!', 'success')
+		flash('Thank you for signing up. You have been logged in already!', \
+			'success')
 		return redirect(url_for('index'))
 	else:
 		return render_template('signup.html', form=form)
@@ -243,10 +248,13 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-	days = Entry.query.filter_by(owner_id=current_user.id).order_by(db.desc('date')).group_by('date').all()
+	days = Entry.query.filter_by(owner_id=current_user.id) \
+		.order_by(db.desc('date')).group_by('date').all()
 	i = 0
 	for day in days:
-		days[i] = {'date': day.date, 'entries': Entry.query.filter_by(owner_id=current_user.id, date=day.date).order_by(db.desc('time')).all()}
+		days[i] = {'date': day.date, \
+		'entries': Entry.query.filter_by(owner_id=current_user.id, \
+			date=day.date).order_by(db.desc('time')).all()}
 		i = i+1
 	return render_template('index.html', entries=days, user=current_user)
 	
