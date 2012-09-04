@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
-
-from flask import Flask, render_template, redirect, url_for, abort, flash
+from flask import Flask, request, Response, render_template, redirect, \
+	url_for, abort, flash
+from flask.views import MethodView
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
@@ -11,6 +12,7 @@ from wtforms import fields, validators, ValidationError
 from markdown import markdown
 from datetime import datetime, date, time
 from functools import wraps
+import json
 
 app = Flask(__name__)
 
@@ -26,8 +28,12 @@ bcrypt = Bcrypt(app)
 
 manager = Manager(app)
 
-"""Database Models"""
 
+
+"""
+	Database Models
+	~~~~~~~~~~~~~~~
+"""
 class User(db.Model):
 	"""The user class is used to store a email/password combination
 	and determine which entries belong to which user. This makes it
@@ -80,10 +86,14 @@ class Entry(db.Model):
 	public = db.Column(db.Boolean)
 	
 	def __html__(self):
+		"""Enable the entry to be used as {{ entry }} in templates. This
+		property will return the html body of the entry in that case."""
 		return self.html
 Entry.owner = db.relationship('User', backref=db.backref('entry', lazy='dynamic'))
 
 class Attachment(db.Model):
+	"""This class is carrying the attachments. It is always connected to
+	entries."""
 	id = db.Column(db.Integer, primary_key=True)
 
 	entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'))
@@ -91,7 +101,12 @@ class Attachment(db.Model):
 	filename = db.Column(db.String(255))
 Attachment.entry = db.relationship('Entry', backref=db.backref('entry', lazy='dynamic'))
 
-"""Forms"""
+
+
+"""
+	Forms
+	~~~~~
+"""
 class SignUpForm(Form):
 	username = fields.TextField('Username')
 	password = fields.PasswordField('Password', [validators.Required()])
@@ -125,7 +140,12 @@ class EntryForm(Form):
 	markup = fields.TextAreaField('Markup', [validators.Required()])
 	public = fields.BooleanField('Make this entry public')
 
-"""Helpers/Tools"""
+
+
+"""
+	Helpers/Tools
+	~~~~~~~~~~~~~
+"""
 @login.user_loader
 def load_user(userid):
 	return User.query.get(userid)
@@ -153,13 +173,24 @@ def auth_missing():
 def auth_required(f):
 	@wraps(f)
 	def decorated(*args, **kwargs):
-		 auth = request.autorization
-		 if not auth or not auth_check(auth):
+		 auth = request.authorization
+		 if not auth or not auth_check(auth.username, auth.password):
 		 	return auth_missing()
 		 return f(*args, **kwargs)
 	return decorated
 
-"""Routes"""
+
+
+"""
+	Routes
+	~~~~~~
+"""
+
+
+"""
+	Webinterface
+	------------
+"""
 @app.route('/signup/', methods=['GET', 'POST'])
 def signup():
 	form = SignUpForm()
@@ -181,7 +212,6 @@ def about():
 	return render_template('about.html')
 
 
-"""Routes for normal access."""
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
@@ -274,31 +304,16 @@ def delete(entryid):
 	flash('Your entry has been deleted.', 'success')
 	return redirect(url_for('index'))
 
-"""Command Line Interface"""
+
+
+"""
+	Command Line Interface
+	~~~~~~~~~~~~~~~~~~~~~~
+"""
 @manager.command
 def initdb():
+	"""Initiate all tables in the database."""
 	db.create_all()
-
-@manager.option('-w', '--workers', dest='workers', default=4)
-@manager.option('-b', '--bind', dest='bind', default='127.0.0.1:53676')
-@manager.option('-l', '--loglevel', dest='loglevel', default='info')
-@manager.option('-p', '--pidfile', dest='pidfile', default=None)
-def listener(bind, workers, loglevel, pidfile):
-	"""Run the listeners for production mode.
-	
-	This will per default run the app on port 53676,
-	only visible on localhost and with 4 workers. You can
-	change this behavior with the available parameters."""
-	from gunicorn.app.base import Application as GunicornApplication
-	
-	class FlaskApplication(GunicornApplication):
-		def init(self, parser, opts, args):
-			return {'bind': bind, 'workers': workers, 'pidfile': pidfile, 'loglevel': loglevel}
-		
-		def load(self):
-			return app
-			
-	FlaskApplication().run()
 
 if __name__ == '__main__':
 	manager.run()
