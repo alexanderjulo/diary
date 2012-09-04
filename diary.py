@@ -31,10 +31,6 @@ manager = Manager(app)
 
 
 
-"""
-	Database Models
-	~~~~~~~~~~~~~~~
-"""
 class User(db.Model):
 	"""The user class is used to store a email/password combination
 	and determine which entries belong to which user. This makes it
@@ -106,10 +102,6 @@ Attachment.entry = db.relationship('Entry', backref=db.backref('entry', \
 
 
 
-"""
-	Forms
-	~~~~~
-"""
 class SignUpForm(Form):
 	username = fields.TextField('Username')
 	password = fields.PasswordField('Password', [validators.Required()])
@@ -145,10 +137,6 @@ class EntryForm(Form):
 
 
 
-"""
-	Helpers/Tools
-	~~~~~~~~~~~~~
-"""
 @login.user_loader
 def load_user(userid):
 	return User.query.get(userid)
@@ -185,16 +173,6 @@ def auth_required(f):
 
 
 
-"""
-	Routes
-	~~~~~~
-"""
-
-
-"""
-	Webinterface
-	------------
-"""
 @app.route('/signup/', methods=['GET', 'POST'])
 def signup():
 	form = SignUpForm()
@@ -314,10 +292,6 @@ def delete(entryid):
 
 
 
-"""
-	Command Line Interface
-	~~~~~~~~~~~~~~~~~~~~~~
-"""
 @manager.command
 def initdb():
 	"""Initiate all tables in the database."""

@@ -24,3 +24,4 @@ database
 *.pyc
 *.sublime-*
 config.py
+docs/_build/
